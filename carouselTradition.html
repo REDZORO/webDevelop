@@ -111,7 +111,7 @@
         </div>
         <div class="circle" id="circle">
             <ol>
-                <li class="dot"></li>
+                <li></li>
                 <li></li>
                 <li></li>
                 <li></li>
@@ -193,6 +193,7 @@
         //批量添加小圆点的监听
         for (var i = 0; i < imgLength; i++) {
             circleLi[i].index = i;
+            circleLi[0].style.backgroundColor = "red";
             circleLi[i].onclick = function () {
                 if (m_unit.isanimated) return;
                 nowFrame = this.index;
@@ -216,10 +217,10 @@
             }
             //去掉所有小圆点的dot
             for (var i = 0; i < circleLi.length; i++) {
-                circleLi[i].className = "";
+                circleLi[i].style.backgroundColor = "orange";
             }
             //第几个信号量这个小圆点就加dot
-            circleLi[n].className = "dot";
+            circleLi[n].style.backgroundColor = "red";
         }
     </script>
 
