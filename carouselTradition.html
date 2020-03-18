@@ -121,47 +121,49 @@
     </div>
     <script src="animationFramework.js"></script>
     <script type="text/javascript">
+        //得到视口窗
         var carousel = document.getElementById("carousel");
-
+        //得到运动对象
         var m_unit = document.getElementById("m_unit");
-
+        //得到ul
         var carouselUl = m_unit.getElementsByTagName("ul")[0];
-
+        //得到li
         var lis = m_unit.getElementsByTagName("li");
-
+        //得到左按钮
         var leftBtn = document.getElementById("leftBtn");
-
+        //得到右按钮
         var rightBtn = document.getElementById("rightBtn");
-
+        //信号量
         var nowFrame = 0;
-
+        //图片数量
         var imgLength = lis.length;
-
+        //得到小圆点
         var circleLi = document.getElementById("circle").getElementsByTagName("li");
-
+        //得到图片宽度
         var width = 560;
-
+        //滚动时间
         var animateTime = 600;
-
+        //间隔时间
         var interval = 2000;
-
+        //缓冲描述
         var tween = "BounceEaseOut";
-
+        //函数节流
         var lock = true;
-
+        //插入第一张图给ul的末尾
         carouselUl.appendChild(lis[0].cloneNode(true));
-
+        //右按钮事件
         rightBtn.onclick = rightBtnHandler;
-
+        //自动轮播
         var timer = setInterval(rightBtnHandler, interval);
-
+        //鼠标进入停止
         carousel.onmouseover = function () {
             clearInterval(timer);
         }
+        //鼠标离开开始
         carousel.onmouseout = function () {
             timer = setInterval(rightBtnHandler, interval);
         }
-
+        //右按钮的事件处理函数
         function rightBtnHandler() {
             //点击右按钮的时候，运动机构本身在运动，就不让右按钮有作用
             if (m_unit.isanimated) return;
@@ -176,15 +178,18 @@
                 }
             });
         }
-
+        //左按钮事件
         leftBtn.onclick = function () {
             if (m_unit.isanimated) return;
+
+            //左按钮的业务，先进行跳转到虚拟帧后在运动
             nowFrame--;
             if (nowFrame < 0) {
                 nowFrame = imgLength - 1;
                 m_unit.style.left = -width * imgLength + "px";
             }
             changeCircle();
+
             animate(m_unit, {
                 "left": -width * nowFrame
             }, animateTime, tween);
@@ -195,7 +200,10 @@
             circleLi[i].index = i;
             circleLi[0].style.backgroundColor = "red";
             circleLi[i].onclick = function () {
+                //点击小圆点运动对象在运动则不起到任何作用
                 if (m_unit.isanimated) return;
+
+                //小圆点的点击业务
                 nowFrame = this.index;
                 animate(m_unit, {
                     "left": -width * nowFrame
@@ -207,7 +215,7 @@
                 changeCircle();
             }
         }
-
+        //更换小圆点
         function changeCircle() {
             //n就是信号量的副本
             var n = nowFrame;
@@ -215,11 +223,11 @@
             if (n == 5) {
                 n = 0;
             }
-            //去掉所有小圆点的dot
+            //所有小圆点都回到初始颜色
             for (var i = 0; i < circleLi.length; i++) {
                 circleLi[i].style.backgroundColor = "orange";
             }
-            //第几个信号量这个小圆点就加dot
+            //第几个信号量这个小圆点就加red背景颜色属性
             circleLi[n].style.backgroundColor = "red";
         }
     </script>
