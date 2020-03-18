@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    div {
+        width: 600px;
+        height: 40px;
+        border: 1px solid red;
+        margin: 100px auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    div ul {
+        list-style: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+
+    }
+
+    div ul li {
+        font-size: 20px;
+        line-height: 40px;
+        text-align: center;
+    }
+</style>
+<script type="text/javascript">
+
+</script>
+
+<body>
+    <div class="carousel" id="carousel">
+        <ul>
+            <li>疫情来临 众志成城</li>
+            <li>疫情来临 赶紧隔离</li>
+            <li>疫情来临 没事别逛</li>
+            <li>疫情来临 吃喝在家</li>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="animationFramework.js"></script>
+    <script type="text/javascript">
+        //得到一个运动对象
+        var ul = document.getElementById("carousel").getElementsByTagName("ul")[0];
+        //获得初始状态为后面循环服务
+        var lis = ul.getElementsByTagName("li");
+        //获得初始长度防止后面深拷贝插入影响该值
+        var oLength = lis.length;
+        //信号量
+        var semaphore = 0;
+        //在运动对象后面加入和初始状态一样的节点，做循环运动
+        ul.appendChild(lis[0].cloneNode(true));
+        //模拟慢匀速的按钮业务
+        function move() {
+            semaphore++;
+
+            animate(ul, {
+                "top": -40*semaphore
+            }, 300,function(){
+                //用oLength为后期增加业务做的解耦合操纵
+                if(semaphore==oLength){
+                    semaphore=0;
+                    this.style.top = "0px";
+                }
+            });
+        }
+        //调用动画函数的间隔时间远大于动画本身运行的时间则会有间歇的感觉
+        setInterval(move,1500);
+    </script>
+</body>
+
+</html>
