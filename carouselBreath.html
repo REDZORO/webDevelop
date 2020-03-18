@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .carousel {
+            width: 560px;
+            height: 300px;
+            margin: 100px auto;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .carousel ul {
+            list-style: none;
+        }
+
+        .carousel ul li {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            filter: alpha(opacity=0);
+        }
+
+        .carousel ul li.first {
+            opacity: 1;
+            filter: alpha(opacity=0);
+        }
+
+        .btns a {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            top: 50%;
+            margin-top: -20px;
+            background-color: orange;
+            font-size: 30px;
+            line-height: 35px;
+            text-align: center;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .btns a:hover {
+            background-color: gold;
+        }
+
+        .leftBtn {
+            left: 10px;
+        }
+
+        .rightBtn {
+            right: 10px;
+        }
+
+        .circles {
+            position: absolute;
+            width: 150px;
+            height: 16px;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .circles ol {
+            list-style: none;
+        }
+
+        .circles ol li {
+            float: left;
+            width: 16px;
+            height: 16px;
+            background-color: orange;
+            margin-right: 6px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .circles ol li.cur {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carousel" id="carousel">
+        <div class="btns">
+            <a class="leftBtn" id="leftBtn">&lt;</a>
+            <a class="rightBtn" id="rightBtn">&gt;</a>
+        </div>
+        <div class="imageslist" id="imageslist">
+            <ul>
+                <li class="first"><a><img src="images/0.jpg" alt="" /></a></li>
+                <li><a><img src="images/1.jpg" alt="" /></a></li>
+                <li><a><img src="images/2.jpg" alt="" /></a></li>
+                <li><a><img src="images/3.jpg" alt="" /></a></li>
+                <li><a><img src="images/4.jpg" alt="" /></a></li>
+            </ul>
+        </div>
+        <div class="circles" id="circles">
+            <ol>
+                <li class="cur"></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ol>
+        </div>
+    </div>
+
+    </head>
+    <script type="text/javascript" src="animationFramework.js"></script>
+    <script type="text/javascript">
+        //得到视口窗
+        var carousel = document.getElementById("carousel");
+        //得到运动对象
+        // var imageslist = document.getElementById("imageslist");
+        //得到ul
+        // var carouselUl = imageslist.getElementsByTagName("ul")[0];
+        //得到li
+        var lis = document.getElementById("imageslist").getElementsByTagName("li");
+        //得到左按钮
+        var leftBtn = document.getElementById("leftBtn");
+        //得到右按钮
+        var rightBtn = document.getElementById("rightBtn");
+        //图片数量
+        var imgLength = lis.length;
+        //得到小圆点
+        var circlesLi = document.getElementById("circles").getElementsByTagName("li");
+        //得到图片宽度
+        var width = 560;
+        //滚动时间
+        var animateTime = 1000;
+        //间隔时间
+        var interval = 1500;
+        //缓冲描述
+        var tween = "BounceEaseOut";
+        //信号量
+        var nowFrame = 0;
+        //函数节流
+        // var lock = true;
+        //插入第一张图给ul的末尾
+        // carouselUl.appendChild(lis[0].cloneNode(true));
+        //右按钮事件
+        rightBtn.onclick = rightBtnHandler;
+        leftBtn.onclick = function () {
+            //函数节流  防止点击过快使用固定帧率
+            if (lis[nowFrame].isanimated) return;
+            //初始的图片淡出
+            animate(lis[nowFrame], {
+                "opacity": 0
+            }, animateTime);
+            //信号量改变
+            nowFrame--;
+            //信号量超过了该图片的个数就要重置为0
+            if (nowFrame < 0) {
+                nowFrame = imgLength - 1;
+            }
+            //新信号的图片淡入
+            animate(lis[nowFrame], {
+                "opacity": 1
+            }, animateTime);
+            //小圆点颜色改变
+            changeCircle();
+        }
+        //自动轮播
+        var timer = setInterval(rightBtnHandler, interval);
+        //鼠标进入停止
+        carousel.onmouseover = function () {
+            clearInterval(timer);
+        }
+        //鼠标离开开始
+        carousel.onmouseout = function () {
+            timer = setInterval(rightBtnHandler, interval);
+        }
+        //右按钮的事件处理函数
+        function rightBtnHandler() {
+            //函数节流  防止点击过快使用固定帧率
+            if (lis[nowFrame].isanimated) return;
+            //初始的图片淡出
+            animate(lis[nowFrame], {
+                "opacity": 0
+            }, animateTime);
+            //信号量改变
+            nowFrame++;
+            //信号量超过了该图片的个数就要重置为0
+            if (nowFrame > imgLength - 1) {
+                nowFrame = 0;
+            }
+            //新信号的图片淡入
+            animate(lis[nowFrame], {
+                "opacity": 1
+            }, animateTime);
+            //小圆点颜色改变
+            changeCircle();
+        }
+        //批量添加小圆点的监听
+        for (var i = 0; i < imgLength; i++) {
+            circlesLi[i].index = i;
+            circlesLi[i].onclick = function () {
+                //点击小圆点运动对象在运动则不起到任何作用
+                if (lis[nowFrame].isanimated) return;
+                //初始的图片淡出
+                animate(lis[nowFrame], {
+                    "opacity": 0
+                }, animateTime);
+
+                //小圆点的点击业务
+                nowFrame = this.index;
+
+                //新信号的图片淡入
+                animate(lis[nowFrame], {
+                    "opacity": 1
+                }, animateTime);
+                //小圆点颜色改变
+                changeCircle();
+            }
+        }
+        //更换小圆点
+        function changeCircle() {
+            //n就是信号量的副本
+            // var n = nowFrame;
+            //判断副本的值如果是5，那就是0
+            // if (n == 5) {
+            //     n = 0;
+            // }
+            //所有小圆点都回到初始颜色
+            for (var i = 0; i < circlesLi.length; i++) {
+                circlesLi[i].className = "";
+            }
+            //第几个信号量这个小圆点就加red背景颜色属性
+            circlesLi[nowFrame].className = "cur";
+        }
+    </script>
+
+
+</body>
+
+</html>
